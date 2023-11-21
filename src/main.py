@@ -49,7 +49,7 @@ def main(args):
     else:
         for _ in range(num_steps):
             automata.update_grid()
-        save_final_stat(automata, output_path)
+        save_final_state(automata, output_path)
         
 
     if debug:
