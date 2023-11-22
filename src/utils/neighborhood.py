@@ -1,7 +1,11 @@
+# src/utils/neighborhood.py
 # functions for getting neighborhoods of a cell
 import numpy as np
 
-# get the von_neumann neighbors
+'''
+Given a 2D grid, returns a list of the Von-Neumann neighbors
+specified by (x, y)
+'''
 def get_neighbors_von_neumann(grid, x, y):
     rows, cols = grid.shape
     neighbors = []
@@ -16,7 +20,10 @@ def get_neighbors_von_neumann(grid, x, y):
 
     return neighbors
 
-
+'''
+Given a 2D grid, returns a list of the Moore neighbors
+specified by (x, y)
+'''
 def get_neighbors_moore(grid, x, y):
     rows, cols = grid.shape
     neighbors = []
