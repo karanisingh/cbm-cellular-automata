@@ -1,23 +1,21 @@
-# src/models/basic_cellular_automata.py
-# first time testing cellular automata
+# src/models/BasicCellularAutomata.py
 
 import numpy as np
 from enum import Enum
 from ..utils.neighborhood import get_neighbors_von_neumann as get_neighbors
-
+from .CellularAutomata import CellularAutomata
 
 # This model works with 2 states: infected, susceptible
 # Grid passed should only have 0 (susceptible) and 1 (infected) as states for initial board 
 # Transition: if anyone in Von Neumann neighborhood is infected, you become infected
-class BasicCellularAutomata:
+'''
+Our first Cellular Automata Model
+'''
+class BasicCellularAutomata(CellularAutomata):
 
     class State(Enum):
         SUSCEPTIBLE = 0
         INFECTED = 1
-
-    def __init__(self, grid):
-        self.original_grid = np.copy(grid)
-        self.current_grid = np.copy(grid)
 
     # update the state of the current cell based on the transition rules
     def update_cell(self, x, y):
@@ -28,7 +26,7 @@ class BasicCellularAutomata:
         # get the neighorhood, see if anyone is infected
         neighborhood = get_neighbors(self.current_grid, x, y)
         
-        # TODO: why the fuck does this not work
+        # TODO: why the FUCK does this not work
         # if np.any(neighborhood == self.State.INFECTED.value):
         #     print("HASDHASD")
         #     return self.State.INFECTED.value
@@ -54,5 +52,15 @@ class BasicCellularAutomata:
         # update the current grid with the one we just calculated
         self.current_grid = next_grid
         
+    # Get the state map for this automata model
+    # state.value --> (state.name, state.color)
+    # colors must be compatible with mcolor.ListedColormap
+    def get_state_colors(self):
+        return {
+            0: ("SUSCEPTIBLE", "green"),
+            1: ("INFECTED", "red")
+        }
+
+
         
 
