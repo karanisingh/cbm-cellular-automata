@@ -40,7 +40,6 @@ def main(args):
     automata = BasicCellularAutomata(grid)
     if debug:
         print("Automata created")
-
         
     #####################################
     ## Run the cellular automata model ##
