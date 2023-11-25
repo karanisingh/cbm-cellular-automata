@@ -9,6 +9,7 @@ class CellularAutomata(ABC):
     def __init__(self, grid):
         self.original_grid = np.copy(grid)
         self.current_grid = np.copy(grid)
+        self.is_terminated = False
 
     @abstractmethod
     def update_cell(self, x, y):
@@ -21,3 +22,7 @@ class CellularAutomata(ABC):
     @abstractmethod
     def get_state_colors(self):
         pass
+
+    # @abstractmethod
+    # def is_terminated(self):
+    #     pass
