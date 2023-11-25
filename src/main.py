@@ -5,6 +5,7 @@ import numpy as np
 from .utils.runner import visual_runner
 from .utils.create_grid import create_grid_from_file
 from .models.BasicCellularAutomata import BasicCellularAutomata
+from .models.BasicProbabilisticCellularAutomata import BasicProbabilisticCellularAutomata
 
 
 def main(args):
@@ -37,7 +38,7 @@ def main(args):
         print("Initial grid:\n")
         print(grid)
     
-    automata = BasicCellularAutomata(grid)
+    automata = BasicProbabilisticCellularAutomata(grid)
     if debug:
         print("Automata created")
         
