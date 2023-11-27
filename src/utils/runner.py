@@ -61,6 +61,7 @@ def visual_runner(automata, steps, output_path, record, video_length):
 
         # Check if the automata has been terminated
         if automata.is_terminated:
+            print("Termination state has been reached.\n")
             break   
 
     

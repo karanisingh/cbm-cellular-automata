@@ -22,7 +22,3 @@ class CellularAutomata(ABC):
     @abstractmethod
     def get_state_colors(self):
         pass
-
-    # @abstractmethod
-    # def is_terminated(self):
-    #     pass

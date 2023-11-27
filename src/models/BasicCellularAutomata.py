@@ -69,13 +69,6 @@ class BasicCellularAutomata(CellularAutomata):
             1: ("INFECTED", "red")
         }
 
-    # # This model will terminate when all cells infected
-    # def is_terminated(self):
-    #     for x in range(self.current_grid.shape[0]):
-    #         for y in range(self.current_grid.shape[1]):
-    #             if current_grid[x, y] == self.State.SUSCEPTIBLE.value:
-    #                 return False
-    #     return True
 
 
         
