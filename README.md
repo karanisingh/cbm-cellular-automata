@@ -9,9 +9,6 @@ This repo is organized more like a library as opposed to one dedicated just to c
 ## Models
 - BasicCellularAutomata
 - BasicProbabilisticCellularAutomata
+- SEIQRD1ProbabilisticCellularAutomata
 
 
-## CURRENT BUGS / TODOS
-- Last frame of 2 state automates show all susceptible (instead of all infected)
-    - don't know how to fix, tried for many hours
-    - issue has to deal with the way it is being visualized: NOT from the cellular automata itself.
