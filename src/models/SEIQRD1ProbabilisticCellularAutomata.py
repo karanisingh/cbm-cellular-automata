@@ -46,7 +46,7 @@ class SEIQRD1ProbabilisticCellularAutomata(CellularAutomata):
     def __init__(self, grid, exposure_prob, infection_prob, quarantine_prob, recovery_prob, death_prob):
         # Grids
         super().__init__(grid)
-        self.timer_grid = np.zeros_like(grid)  # Timer grid to track time spent in each state
+        self.current_timer_grid = np.zeros_like(grid)
 
         # Constants needed
         self.exposure_prob = exposure_prob
@@ -67,66 +67,66 @@ class SEIQRD1ProbabilisticCellularAutomata(CellularAutomata):
 
     def update_cell(self, x, y):
         # Get current cell's state and Moore neighborhood)
-        state = State(self.current_grid[x, y])
+        state = self.State(self.current_grid[x, y])
         neighborhood = get_neighbors(self.current_grid, x, y)
         num_infected_neighbors = 0
         num_exposed_neighbors = 0
         for neighbor in neighborhood:
-            if State(neighbor) == State.INFECTED:
+            if self.State(neighbor) == self.State.INFECTED:
                 num_infected_neighbors += 1
-            elif State(neighbor) == State.EXPOSED:
+            elif self.State(neighbor) == self.State.EXPOSED:
                 num_exposed_neighbors += 1
 
         # Get current cell's timer
-        timer = self.timer_grid[x, y]
+        timer = self.current_timer_grid[x, y]
 
         ##############
         # Transition #
         ##############
 
         # P(S --> E) = P(exposure)*(#exposed_moore + #infected_moore)
-        if state == State.SUSCEPTIBLE and num_infected_neighbors > 0:
+        if state == self.State.SUSCEPTIBLE and num_infected_neighbors > 0:
             if self.rng.random() < self.exposure_prob * (num_infected_neighbors + num_exposed_neighbors):
-                return (State.EXPOSED.value, 1)  # Start exposure timer
+                return (self.State.EXPOSED.value, 1)  # Start exposure timer
         
         # P(E --> I) = P(Infection) | Exposure_delay
-        elif state == State.EXPOSED and timer >= self.exposure_delay:
-            if self.rng.random() < self.infection_prob:
-                return (State.INFECTED.value, 1)  # Start infection timer
+        elif state == self.State.EXPOSED:
+            if timer >= self.infection_delay and self.rng.random() < self.infection_prob:
+                return (self.State.INFECTED.value, 1)  # Start infection timer
 
         # P(I --> {R, D, Q})
-        elif state == State.INFECTED:
+        elif state == self.State.INFECTED:
             # P(I --> R) = P(100%) | Recovery_delay
             if timer >= self.recovery_delay and self.rng.random() < self.recovery_prob:
-                return (State.RECOVERED.value, 0)
+                return (self.State.RECOVERED.value, 0)
 
             # P(I --> D) = P(Death) | 7 days is peak for deth
             if timer >= self.death_delay and timer <= self.death_cutoff and self.rng.random() < self.death_prob:
-                return (State.DEAD.value, 0)
+                return (self.State.DEAD.value, 0)
 
             # P(I --> Q) = P(Quarantine) | Quarantine_delay
-            if timer >= self.infection_delay and self.rng.random() < self.quarantine_prob:
-                return (State.QUARANTINED.value, timer)  # Continue quarantine timer from infection timer
+            if timer >= self.quarantine_delay and self.rng.random() < self.quarantine_prob:
+                return (self.State.QUARANTINED.value, timer)  # Continue quarantine timer from infection timer
   
         # P(Q --> {R, D})
-        elif state == State.QUARANTINED:
+        elif state == self.State.QUARANTINED:
             # P(Q --> R) = P(100%) | Recovery_delay
             if timer >= self.recovery_delay and self.rng.random() < self.recovery_prob:
-                return (State.RECOVERED.value, 0)
+                return (self.State.RECOVERED.value, 0)
 
             # P(Q --> D) = P(Death) | 7 days is peak for deth
             if timer >= self.death_delay and timer <= self.death_cutoff and self.rng.random() < self.death_prob:
-                return (State.DEAD.value, 0)
+                return (self.State.DEAD.value, 0)
 
         # Increment timer if state has not changed
-        if state == self.current_grid[x, y]:
-            self.timer_grid[x, y] += 1
+        # if state == self.current_grid[x, y]:
+        #    self.timer_grid[x, y] += 1
 
-        return (state.value, self.timer_grid[x, y])
+        return (state.value, self.current_timer_grid[x, y]+1)
 
     def update_grid(self):
         next_grid = np.copy(self.current_grid)
-        next_timer_grid = np.copy(self.timer_grid)
+        next_timer_grid = np.copy(self.current_timer_grid)
 
         for x in range(self.current_grid.shape[0]):
             for y in range(self.current_grid.shape[1]):
@@ -134,26 +134,19 @@ class SEIQRD1ProbabilisticCellularAutomata(CellularAutomata):
                 next_grid[x, y] = next_state
                 next_timer_grid[x, y] = next_timer
 
-        # TODO: TERMINATION CASE
-        if np.array_equal(self.current_grid, next_grid):
-            self.sameStateCount += 1
-        else:
-            self.sameStateCount = 0
-        if self.sameStateCount > 4:
-            self.is_terminated = True
-            return
+        # TODO: Termination
 
         self.current_grid = next_grid
-        self.timer_grid = next_timer_grid
+        self.current_timer_grid = next_timer_grid
 
     def get_state_colors(self):
         return {
-            State.SUSCEPTIBLE.value: ("SUSCEPTIBLE", "green"),
-            State.EXPOSED.value: ("EXPOSED", "yellow"),
-            State.QUARANTINED.value: ("QUARANTINED", "blue"),
-            State.INFECTED.value: ("INFECTED", "red"),
-            State.RECOVERED.value: ("RECOVERED", "gray"),
-            State.DEAD.value: ("DEAD", "black")
+            self.State.SUSCEPTIBLE.value: ("SUSCEPTIBLE", "green"),
+            self.State.EXPOSED.value: ("EXPOSED", "yellow"),
+            self.State.INFECTED.value: ("INFECTED", "red"),
+            self.State.QUARANTINED.value: ("QUARANTINED", "blue"),
+            self.State.RECOVERED.value: ("RECOVERED", "gray"),
+            self.State.DEAD.value: ("DEAD", "black")
         }
 
 

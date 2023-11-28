@@ -6,7 +6,7 @@ from .utils.runner import visual_runner
 from .utils.create_grid import create_grid_from_file
 from .models.BasicCellularAutomata import BasicCellularAutomata
 from .models.BasicProbabilisticCellularAutomata import BasicProbabilisticCellularAutomata
-
+from .models.SEIQRD1ProbabilisticCellularAutomata import SEIQRD1ProbabilisticCellularAutomata
 
 def main(args):
     #####################
@@ -38,7 +38,7 @@ def main(args):
         print("Initial grid:\n")
         print(grid)
     
-    automata = BasicProbabilisticCellularAutomata(grid)
+    automata = SEIQRD1ProbabilisticCellularAutomata(grid, exposure_prob=0.2, infection_prob=0.1, quarantine_prob=0.5, recovery_prob=0.9, death_prob=0.01)
     if debug:
         print("Automata created")
         
