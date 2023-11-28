@@ -9,5 +9,6 @@ This repo is organized more like a library as opposed to one dedicated just to c
 ## Models
 - BasicCellularAutomata
 - BasicProbabilisticCellularAutomata
+- SEIQRD1ProbabilisticCellularAutomata
 
 
