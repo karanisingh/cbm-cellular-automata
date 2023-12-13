@@ -1,135 +1,15 @@
-# src/utils/runner.py
-
-# import matplotlib.pyplot as plt
-# import matplotlib.colors as mcolors
-# from matplotlib.patches import Patch
-
-# import numpy as np
-# from celluloid import Camera
-
-
-'''
-Runs the automata
-Prints each step in the terminal
-Saves a video of the run to the output folder
-'''
-# def visual_runner(automata, steps, output_path, record, video_length):
-
-#     # Create the color map
-#     state_colors = automata.get_state_colors()
-#     print("State colors: ", state_colors)
-#     cmap = mcolors.ListedColormap([state_colors[state][1] for state in state_colors])
-#     print("Color Map:", [state_colors[state][1] for state in state_colors])  # Add this line
-
-#     # Create the plot and legend
-#     fig, ax = plt.subplots() 
-#     camera = Camera(fig)
-#     legend_patches = [Patch(color=color, label=name) for name, color in state_colors.values()]
-
-#     # Initial grid snapshot
-#     ax.imshow(automata.current_grid, cmap=cmap)
-#     ax.legend(handles=legend_patches, loc='upper left', framealpha=0.04)
-#     ax.grid(which='both', color='k', linestyle='-', linewidth=1)
-#     ax.set_xticks(np.arange(-.5, automata.current_grid.shape[1], 1))
-#     ax.set_yticks(np.arange(-.5, automata.current_grid.shape[0], 1))
-#     ax.set_xticklabels([])  # Remove x-axis tick labels
-#     ax.set_yticklabels([])  # Remove y-axis tick labels
-#     ax.tick_params(axis='both', which='both', length=0)  # Hide the tick marks
-#     ax.axis('on')   
-#     ax.text(0.95, 0.05, f'Time: {0}', transform=ax.transAxes, color='white',ha='right', va='bottom', fontsize='large', weight='bold',bbox=dict(boxstyle='round,pad=0.1', facecolor='black', edgecolor='none', alpha=0.7))      
-#     camera.snap()   
-#     ax.clear()
-
-#     # Run for the steps, create the frames for the video
-#     for i in range(steps):
-#         automata.update_grid()
-#         print(f"Step {i+1} of {steps}")
-#         print("Automata:\n",automata.current_grid)
-#         print("Timer:\n",automata.current_timer_grid, "\n\n")
-
-#         # Grid display
-#         ax.imshow(automata.current_grid, cmap=cmap)
-#         ax.legend(handles=legend_patches, loc='upper left', framealpha=0.04)
-#         ax.grid(which='both', color='k', linestyle='-', linewidth=1)
-#         ax.set_xticks(np.arange(-.5, automata.current_grid.shape[1], 1))
-#         ax.set_yticks(np.arange(-.5, automata.current_grid.shape[0], 1))
-#         ax.set_xticklabels([])  # Remove x-axis tick labels
-#         ax.set_yticklabels([])  # Remove y-axis tick labels
-#         ax.tick_params(axis='both', which='both', length=0)  # Hide the tick marks
-#         ax.axis('on')
-#         ax.text(0.95, 0.05, f'Time: {i+1}', transform=ax.transAxes, color='white',ha='right', va='bottom', fontsize='large', weight='bold',bbox=dict(boxstyle='round,pad=0.1', facecolor='black', edgecolor='none', alpha=0.7))      
-
-#         # Save frame    
-#         camera.snap()
-#         ax.clear()
-
-#         # Check if the automata has been terminated
-#         if automata.is_terminated:
-#             print("Termination state has been reached.\n")
-#             break   
-
-    
-
-#     # Create and save the animation
-#     animation = camera.animate()
-#     if record:
-#         animation.save(output_path, writer='ffmpeg', fps=max(float(steps)/video_length, 1))
-
-#     print(f"Video of the run can be found at {output_path}")
-
-# from matplotlib.animation import FuncAnimation
-
-# # Define the update function for animation
-# def update(frame_number, automata, fig, ax, cmap, legend_patches):
-#     ax.clear()
-#     automata.update_grid()
-#     print(f"Step {frame_number+1}")
-#     print("Automata:\n",automata.current_grid)
-#     print("Timer:\n",automata.current_timer_grid, "\n\n")
-
-#     # Set up the plot settings again
-#     ax.imshow(automata.current_grid, cmap=cmap)
-#     ax.legend(handles=legend_patches, loc='upper left', framealpha=0.04)
-#     ax.grid(which='both', color='k', linestyle='-', linewidth=1)
-#     ax.set_xticks(np.arange(-.5, automata.current_grid.shape[1], 1))
-#     ax.set_yticks(np.arange(-.5, automata.current_grid.shape[0], 1))
-#     ax.set_xticklabels([])  # Remove x-axis tick labels
-#     ax.set_yticklabels([])  # Remove y-axis tick labels
-#     ax.tick_params(axis='both', which='both', length=0)  # Hide the tick marks
-#     ax.axis('on')
-#     ax.text(0.95, 0.05, f'Time: {frame_number+1}', transform=ax.transAxes, color='white',ha='right', va='bottom', fontsize='large', weight='bold',bbox=dict(boxstyle='round,pad=0.1', facecolor='black', edgecolor='none', alpha=0.7))      
-    
-#     # Optionally print the current state of the grid to the terminal
-#     print(f"Step {frame_number + 1}")
-#     print("Automata:\n", automata.current_grid)
-#     print("Timer:\n", automata.current_timer_grid, "\n\n")
-    
-#     if automata.is_terminated:
-#         print("Termination state has been reached.\n")
-#         # Stop the animation if the automata is terminated
-#         anim.event_source.stop()
-
-# def visual_runner(automata, steps, output_path, record, video_length):
-#     # Create the initial plot outside the loop
-#     fig, ax = plt.subplots()
-#     state_colors = automata.get_state_colors()
-#     print("State colors: ", state_colors)
-#     cmap = mcolors.ListedColormap([state_colors[state][1] for state in state_colors])
-#     legend_patches = [Patch(color=color, label=name) for name, color in state_colors.values()]
-
-#     # Create the animation object
-#     anim = FuncAnimation(fig, update, fargs=(automata, fig, ax, cmap, legend_patches), frames=steps, repeat=False)
-
-#     # Save the animation
-#     if record:
-#         anim.save(output_path, writer='ffmpeg', fps=max(float(steps)/video_length, 1))
-
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import matplotlib.patches as mpatches
 import numpy as np
 import imageio
 import os
+
+'''
+Runs the automata
+Prints each step in the terminal
+Saves a video of the run to the output folder
+'''
 
 def visual_runner(automata, steps, output_path, record, video_length):
     # Create a temporary directory to store images
@@ -141,7 +21,6 @@ def visual_runner(automata, steps, output_path, record, video_length):
     color_map = {state: mcolors.to_rgba(color) for state, (_, color) in state_colors.items()}
     legend_patches = [mpatches.Patch(color=color, label=label) for _, (label, color) in state_colors.items()]
     nrows, ncols = automata.current_grid.shape
-
 
     # Generate images for each step
     for step in range(steps):
@@ -163,6 +42,15 @@ def visual_runner(automata, steps, output_path, record, video_length):
 
         # Adding legend inside the plot
         ax.legend(handles=legend_patches, loc='upper right')
+        
+        # Accommodate for device and no device
+        for (i, j), value in np.ndenumerate(automata.device_grid):
+            if value == 1:  # If a device is present
+                if(automata.current_grid[i][j] == automata.State.EXPOSED.value):
+                    ax.text(j, i, 'D', ha='center', va='center', color='black', fontsize='large', fontweight='bold')
+                else:
+                    ax.text(j, i, 'D', ha='center', va='center', color='white', fontsize='large', fontweight='bold')
+
 
         # Remove axis ticks
         ax.axis('off')
@@ -184,3 +72,14 @@ def visual_runner(automata, steps, output_path, record, video_length):
     os.rmdir('temp_images')
 
     print(f"Video saved to {output_path}")
+
+
+
+
+
+
+
+    # # Device colors from automata
+    # device_colors = automata.get_device_colors()
+    # d_color_map = {device: mcolors.to_rgba(color) for device, (_, color) in device_colors.items()}
+    # d_legend_patches = [mpatches.Patch(color=color, label=label) for _, (label, color) in device_colors.items()]
