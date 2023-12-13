@@ -38,7 +38,7 @@ def main(args):
         print("Initial grid:\n")
         print(grid)
     
-    automata = SEIQRD1ProbabilisticCellularAutomata(grid, exposure_prob=0.2, infection_prob=0.1, quarantine_prob=0.5, recovery_prob=0.9, death_prob=0.01)
+    automata = SEIQRD1ProbabilisticCellularAutomata(grid, exposure_prob=0.2, infection_prob=0.5, quarantine_prob=0.5, recovery_prob=0.9, death_prob=0.01)
     if debug:
         print("Automata created")
         
