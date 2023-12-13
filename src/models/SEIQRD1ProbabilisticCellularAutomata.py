@@ -17,6 +17,9 @@ from .CellularAutomata import CellularAutomata
 #   P(E --> I)      --> P(Infection | Exposure) = prob infection grows and shows symptoms
 #                    -> Transition delay = 8 (incubation period)
 #
+#   P(E --> S)      --> P(!Infection | Exposure) = prob that infection is not developed
+#                    -> Transition delay = 8 (incubation period)
+#
 #   P(I --> Q)      --> P(Quarantine) = measures efficiency of testing methods
 #                    -> Transition delay = measures promptness of testing
 #
@@ -35,6 +38,7 @@ from .CellularAutomata import CellularAutomata
 
 class SEIQRD1ProbabilisticCellularAutomata(CellularAutomata):
 
+    # 6 STATES
     class State(Enum):
         SUSCEPTIBLE = 0
         EXPOSED = 1
@@ -89,10 +93,15 @@ class SEIQRD1ProbabilisticCellularAutomata(CellularAutomata):
             if self.rng.random() < self.exposure_prob * (num_infected_neighbors + num_exposed_neighbors):
                 return (self.State.EXPOSED.value, 1)  # Start exposure timer
         
-        # P(E --> I) = P(Infection) | Exposure_delay
+        # P(E --> {S, I})
         elif state == self.State.EXPOSED:
-            if timer >= self.infection_delay and self.rng.random() < self.infection_prob:
-                return (self.State.INFECTED.value, 1)  # Start infection timer
+            if timer >= self.infection_delay:
+                # P(E --> I) = P(Infection) | infection_delay
+                if self.rng.random() < self.infection_prob:
+                    return (self.State.INFECTED.value, 1)  # Start infection timer
+                # P(E --> S) = !P(E --> I) | infection delay
+                else:
+                    return (self.State.SUSCEPTIBLE.value, 1) # Start susceptible timer (not used)
 
         # P(I --> {R, D, Q})
         elif state == self.State.INFECTED:
