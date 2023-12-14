@@ -131,6 +131,28 @@ class SEIQRD_DevicePCA(CellularAutomata):
         # Needed to determine termination 
         self.sameStateCount = 0
         
+        # Number of cells in each state
+        self.scount = 0
+        self.ecount = 0
+        self.icount = 0
+        self.qcount = 0
+        self.rcount = 0
+        self.dcount = 0
+        for cell in grid.flat:
+            match cell:
+                case 0:
+                    self.scount += 1
+                case 1:
+                    self.ecount += 1
+                case 2:
+                    self.icount += 1
+                case 3:
+                    self.qcount += 1
+                case 4:
+                    self.rcount += 1
+                case 5:
+                    self.dcount += 1
+        
 
     def update_cell(self, x, y):
         # Get current cell's state and Moore neighborhood)
@@ -209,12 +231,33 @@ class SEIQRD_DevicePCA(CellularAutomata):
     def update_grid(self):
         next_grid = np.copy(self.current_grid)
         next_timer_grid = np.copy(self.current_timer_grid)
+        
+        # reset state counts to 0
+        self.scount = 0
+        self.ecount = 0
+        self.icount = 0
+        self.qcount = 0
+        self.rcount = 0
+        self.dcount = 0
 
         for x in range(self.current_grid.shape[0]):
             for y in range(self.current_grid.shape[1]):
                 next_state, next_timer = self.update_cell(x, y)
                 next_grid[x, y] = next_state
                 next_timer_grid[x, y] = next_timer
+                match next_state:
+                    case 0:
+                        self.scount += 1
+                    case 1:
+                        self.ecount += 1
+                    case 2:
+                        self.icount += 1
+                    case 3:
+                        self.qcount += 1
+                    case 4:
+                        self.rcount += 1
+                    case 5:
+                        self.dcount += 1
 
         # TODO: Termination
         self.current_grid = next_grid

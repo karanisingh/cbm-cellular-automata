@@ -1,8 +1,11 @@
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import matplotlib.patches as mpatches
+import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 import imageio
+import csv
 import os
 
 '''
@@ -22,43 +25,50 @@ def visual_runner(automata, steps, output_path, record, video_length):
     legend_patches = [mpatches.Patch(color=color, label=label) for _, (label, color) in state_colors.items()]
     nrows, ncols = automata.current_grid.shape
 
-    # Generate images for each step
-    for step in range(steps):
-        print(f"Step {step}")
-        print("Automata:\n", automata.current_grid)
-        print("Timer:\n", automata.current_timer_grid, "\n\n")
-        fig, ax = plt.subplots()
-        ax.set_title(f"Step {step}")
-        # Create a grid image with colors based on state
-        grid_image = [[color_map[state] for state in row] for row in automata.current_grid]
-        ax.imshow(grid_image, interpolation='nearest', aspect='auto')
+    with open('data\output\last_run_state_counts.csv', 'w', newline='') as csvfile:
+        # output a csv containing the distribution of cells in each state per time step
+        writer = csv.writer(csvfile, delimiter=',')
+        writer.writerow(["step","s","e","i","q","r","d","total"])
+        # Generate images for each step
+        for step in range(steps):
+            print(f"Step {step}")
+            print("Automata:\n", automata.current_grid)
+            print("Timer:\n", automata.current_timer_grid, "\n\n")
+            fig, ax = plt.subplots()
+            ax.set_title(f"Step {step}")
+            # Create a grid image with colors based on state
+            grid_image = [[color_map[state] for state in row] for row in automata.current_grid]
+            ax.imshow(grid_image, interpolation='nearest', aspect='auto')
 
-        # Set aspect of the plot to be equal to ensure square cells
-        ax.set_aspect('equal')
+            # Set aspect of the plot to be equal to ensure square cells
+            ax.set_aspect('equal')
 
-        # Adding grid lines
-        ax.vlines(np.arange(ncols) - 0.5, ymin=-0.5, ymax=nrows - 0.5, color='white', linewidth=2)
-        ax.hlines(np.arange(nrows) - 0.5, xmin=-0.5, xmax=ncols - 0.5, color='white', linewidth=2)
+            # Adding grid lines
+            ax.vlines(np.arange(ncols) - 0.5, ymin=-0.5, ymax=nrows - 0.5, color='white', linewidth=2)
+            ax.hlines(np.arange(nrows) - 0.5, xmin=-0.5, xmax=ncols - 0.5, color='white', linewidth=2)
 
-        # Adding legend inside the plot
-        ax.legend(handles=legend_patches, loc='upper right')
-        
-        # Accommodate for device and no device
-        for (i, j), value in np.ndenumerate(automata.device_grid):
-            if value == 1:  # If a device is present
-                if(automata.current_grid[i][j] == automata.State.EXPOSED.value):
-                    ax.text(j, i, 'D', ha='center', va='center', color='black', fontsize='large', fontweight='bold')
-                else:
-                    ax.text(j, i, 'D', ha='center', va='center', color='white', fontsize='large', fontweight='bold')
+            # Adding legend inside the plot
+            ax.legend(handles=legend_patches, loc='upper right')
+            
+            # Accommodate for device and no device
+            for (i, j), value in np.ndenumerate(automata.device_grid):
+                if value == 1:  # If a device is present
+                    if(automata.current_grid[i][j] == automata.State.EXPOSED.value):
+                        ax.text(j, i, 'D', ha='center', va='center', color='black', fontsize='large', fontweight='bold')
+                    else:
+                        ax.text(j, i, 'D', ha='center', va='center', color='white', fontsize='large', fontweight='bold')
 
 
-        # Remove axis ticks
-        ax.axis('off')
-        plt.savefig(f'temp_images/step_{step}.png', bbox_inches='tight')
-        plt.close()
+            # Remove axis ticks
+            ax.axis('off')
+            plt.savefig(f'temp_images/step_{step}.png', bbox_inches='tight')
+            plt.close()
+            
+            writer.writerow([step,automata.scount,automata.ecount,automata.icount,automata.qcount,
+                             automata.rcount,automata.dcount,nrows*ncols])
 
-        # Update the automata for the next step
-        automata.update_grid()
+            # Update the automata for the next step
+            automata.update_grid()
 
     # Compile images into a video
     with imageio.get_writer(output_path, fps=max(float(steps)/video_length, 1)) as video:
@@ -72,6 +82,21 @@ def visual_runner(automata, steps, output_path, record, video_length):
     os.rmdir('temp_images')
 
     print(f"Video saved to {output_path}")
+    
+    # Output a graph of the states over time
+    graph_csv_input = pd.read_csv('data\output\last_run_state_counts.csv', index_col='step')
+    plt.figure(figsize=(16,8), dpi=150)
+    graph_csv_input['s'].plot(label='SUSCEPTIBLE')
+    graph_csv_input['e'].plot(label='EXPOSED')
+    graph_csv_input['i'].plot(label='INFECTED')
+    graph_csv_input['q'].plot(label='QUARANTINED')
+    graph_csv_input['r'].plot(label='RECOVERED')
+    graph_csv_input['d'].plot(label='DEAD')
+    plt.title('State Counts Over Time')
+    plt.xlabel('Step')
+    plt.ylabel('Count')
+    plt.legend()
+    plt.savefig('data\output\last_run_state_count_graph.png')
 
 
 
