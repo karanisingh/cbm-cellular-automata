@@ -132,6 +132,7 @@ class SEIQRD_DevicePCA(CellularAutomata):
         self.sameStateCount = 0
         
         # Number of cells in each state
+        self.total_infection_count = 0
         self.scount = 0
         self.ecount = 0
         self.icount = 0
@@ -146,6 +147,7 @@ class SEIQRD_DevicePCA(CellularAutomata):
                     self.ecount += 1
                 case 2:
                     self.icount += 1
+                    self.total_infection_count += 1
                 case 3:
                     self.qcount += 1
                 case 4:
@@ -252,6 +254,8 @@ class SEIQRD_DevicePCA(CellularAutomata):
                         self.ecount += 1
                     case 2:
                         self.icount += 1
+                        if (self.current_grid[x, y] < 2):
+                            self.total_infection_count += 1
                     case 3:
                         self.qcount += 1
                     case 4:

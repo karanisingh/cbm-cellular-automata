@@ -28,7 +28,7 @@ def visual_runner(automata, steps, output_path, record, video_length):
     with open('data\output\last_run_state_counts.csv', 'w', newline='') as csvfile:
         # output a csv containing the distribution of cells in each state per time step
         writer = csv.writer(csvfile, delimiter=',')
-        writer.writerow(["step","s","e","i","q","r","d","total"])
+        writer.writerow(["step","s","e","i","q","r","d","total","total_infected"])
         # Generate images for each step
         for step in range(steps):
             print(f"Step {step}")
@@ -65,7 +65,7 @@ def visual_runner(automata, steps, output_path, record, video_length):
             plt.close()
             
             writer.writerow([step,automata.scount,automata.ecount,automata.icount,automata.qcount,
-                             automata.rcount,automata.dcount,nrows*ncols])
+                             automata.rcount,automata.dcount,nrows*ncols,automata.total_infection_count])
 
             # Update the automata for the next step
             automata.update_grid()
@@ -86,12 +86,13 @@ def visual_runner(automata, steps, output_path, record, video_length):
     # Output a graph of the states over time
     graph_csv_input = pd.read_csv('data\output\last_run_state_counts.csv', index_col='step')
     plt.figure(figsize=(16,8), dpi=150)
-    graph_csv_input['s'].plot(label='SUSCEPTIBLE')
-    graph_csv_input['e'].plot(label='EXPOSED')
-    graph_csv_input['i'].plot(label='INFECTED')
-    graph_csv_input['q'].plot(label='QUARANTINED')
-    graph_csv_input['r'].plot(label='RECOVERED')
-    graph_csv_input['d'].plot(label='DEAD')
+    graph_csv_input['s'].plot(label='SUSCEPTIBLE',c='green')
+    graph_csv_input['e'].plot(label='EXPOSED',c='yellow')
+    graph_csv_input['i'].plot(label='INFECTED',c='red')
+    graph_csv_input['q'].plot(label='QUARANTINED',c='blue')
+    graph_csv_input['r'].plot(label='RECOVERED',c='gray')
+    graph_csv_input['d'].plot(label='DEAD',c='black')
+    graph_csv_input['total_infected'].plot(label='TOTAL INFECTED',c='red',linestyle='dotted')
     plt.title('State Counts Over Time')
     plt.xlabel('Step')
     plt.ylabel('Count')
