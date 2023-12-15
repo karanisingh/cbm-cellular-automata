@@ -34,18 +34,18 @@ def visual_runner(automata, steps, output_path, record, video_length):
             print(f"Step {step}")
             print("Automata:\n", automata.current_grid)
             print("Timer:\n", automata.current_timer_grid, "\n\n")
-            fig, ax = plt.subplots()
+            fig, ax = plt.subplots(figsize=(10, 10))
             ax.set_title(f"Step {step}")
             # Create a grid image with colors based on state
             grid_image = [[color_map[state] for state in row] for row in automata.current_grid]
-            ax.imshow(grid_image, interpolation='nearest', aspect='auto')
+            ax.imshow(grid_image, interpolation='none', aspect='equal')
 
             # Set aspect of the plot to be equal to ensure square cells
             ax.set_aspect('equal')
 
             # Adding grid lines
-            ax.vlines(np.arange(ncols) - 0.5, ymin=-0.5, ymax=nrows - 0.5, color='white', linewidth=2)
-            ax.hlines(np.arange(nrows) - 0.5, xmin=-0.5, xmax=ncols - 0.5, color='white', linewidth=2)
+            ax.vlines(np.arange(ncols) - 0.5, ymin=-0.5, ymax=nrows - 0.5, color='white', linewidth=0.5)
+            ax.hlines(np.arange(nrows) - 0.5, xmin=-0.5, xmax=ncols - 0.5, color='white', linewidth=0.5)
 
             # Adding legend inside the plot
             ax.legend(handles=legend_patches, loc='upper right')
@@ -54,9 +54,9 @@ def visual_runner(automata, steps, output_path, record, video_length):
             for (i, j), value in np.ndenumerate(automata.device_grid):
                 if value == 1:  # If a device is present
                     if(automata.current_grid[i][j] == automata.State.EXPOSED.value):
-                        ax.text(j, i, 'D', ha='center', va='center', color='black', fontsize='large', fontweight='bold')
+                        ax.text(j, i, 'D', ha='center', va='center', color='black', fontsize='xx-small', fontweight='bold')
                     else:
-                        ax.text(j, i, 'D', ha='center', va='center', color='white', fontsize='large', fontweight='bold')
+                        ax.text(j, i, 'D', ha='center', va='center', color='white', fontsize='xx-small', fontweight='bold')
 
 
             # Remove axis ticks
