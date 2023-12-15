@@ -16,6 +16,7 @@ Saves a video of the run to the output folder
 
 def visual_runner(automata, steps, output_path, record, video_length):
     # Create a temporary directory to store images
+    temp_image_dir = 'temp_images'
     if not os.path.exists('temp_images'):
         os.makedirs('temp_images')
 
@@ -25,7 +26,9 @@ def visual_runner(automata, steps, output_path, record, video_length):
     legend_patches = [mpatches.Patch(color=color, label=label) for _, (label, color) in state_colors.items()]
     nrows, ncols = automata.current_grid.shape
 
-    with open('data\output\last_run_state_counts.csv', 'w', newline='') as csvfile:
+    #with open('data\output\last_run_state_counts.csv', 'w', newline='') as csvfile:
+    with open(os.path.join('data', 'output', 'last_run_state_counts.csv'), 'w', newline='') as csvfile:
+
         # output a csv containing the distribution of cells in each state per time step
         writer = csv.writer(csvfile, delimiter=',')
         writer.writerow(["step","s","e","i","q","r","d","total","total_infected"])
@@ -61,7 +64,9 @@ def visual_runner(automata, steps, output_path, record, video_length):
 
             # Remove axis ticks
             ax.axis('off')
-            plt.savefig(f'temp_images/step_{step}.png', bbox_inches='tight')
+            # plt.savefig(f'temp_images/step_{step}.png', bbox_inches='tight')
+            plt.savefig(os.path.join(temp_image_dir, f'step_{step}.png'), bbox_inches='tight')
+
             plt.close()
             
             writer.writerow([step,automata.scount,automata.ecount,automata.icount,automata.qcount,
@@ -73,18 +78,22 @@ def visual_runner(automata, steps, output_path, record, video_length):
     # Compile images into a video
     with imageio.get_writer(output_path, fps=max(float(steps)/video_length, 1)) as video:
         for step in range(steps):
-            image = imageio.imread(f'temp_images/step_{step}.png')
+            # image = imageio.imread(f'temp_images/step_{step}.png')
+            image_path = os.path.join(temp_image_dir, f'step_{step}.png')
+            image = imageio.imread(image_path)
             video.append_data(image)
 
     # Clean up temporary images
     for step in range(steps):
-        os.remove(f'temp_images/step_{step}.png')
-    os.rmdir('temp_images')
+        os.remove(os.path.join(temp_image_dir, f'step_{step}.png'))
+    os.rmdir(temp_image_dir)
 
     print(f"Video saved to {output_path}")
     
     # Output a graph of the states over time
-    graph_csv_input = pd.read_csv('data\output\last_run_state_counts.csv', index_col='step')
+    # graph_csv_input = pd.read_csv('data\output\last_run_state_counts.csv', index_col='step')
+    graph_csv_input = pd.read_csv(os.path.join('data', 'output', 'last_run_state_counts.csv'), index_col='step')
+
     plt.figure(figsize=(16,8), dpi=150)
     graph_csv_input['s'].plot(label='SUSCEPTIBLE',c='green')
     graph_csv_input['e'].plot(label='EXPOSED',c='yellow')
@@ -97,7 +106,11 @@ def visual_runner(automata, steps, output_path, record, video_length):
     plt.xlabel('Step')
     plt.ylabel('Count')
     plt.legend()
-    plt.savefig('data\output\last_run_state_count_graph.png')
+
+
+    #plt.savefig('data\output\last_run_state_count_graph.png')
+    plt.savefig(os.path.join('data', 'output', 'last_run_state_count_graph.png'))
+
 
 
 
