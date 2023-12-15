@@ -177,12 +177,12 @@ class SEIQRD_DevicePCA(CellularAutomata):
         # Transition  #
         ###############
 
-        # P(S --> E) = P(exposure)*(#exposed_moore + #infected_moore)
+        # P(S --> E)
         if state == self.State.SUSCEPTIBLE and num_infected_neighbors > 0:
-            #   P(S --> E | !Device)
+            #   P(S --> E | !Device) = P(exposure)*(#exposed_moore + #infected_moore)
             if not device and self.rng.random() < self.exposure_prob * (num_infected_neighbors + num_exposed_neighbors):
                 return (self.State.EXPOSED.value, 1)  # Start exposure timer
-             #   P(S --> E | Device)
+             #   P(S --> E | Device) = (P(exposure)*device_param1) *(#exposed_moore + #infected_moore)
             elif device and self.rng.random() < (self.exposure_prob*self.device_pm1) * (num_infected_neighbors + num_exposed_neighbors):
                 return (self.State.EXPOSED.value, 1)  # Start exposure timer
         
